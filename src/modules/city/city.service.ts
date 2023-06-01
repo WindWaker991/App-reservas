@@ -10,7 +10,8 @@ export class CityService {
   constructor(@InjectRepository(City) private cityRepository: Repository<City>) {}
   
   async create(createCityDto: CreateCityDto) {
-    
+    const city = this.cityRepository.create(createCityDto);
+    return await this.cityRepository.save(city);
   }
 
   async findAll() {

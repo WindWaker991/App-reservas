@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSourceConfig } from './config/data.source';
 import { UsersModule } from './modules/users/users.module';
 import { CityModule } from './modules/city/city.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 
 @Module({
@@ -18,7 +19,8 @@ import { CityModule } from './modules/city/city.module';
       ...DataSourceConfig
     }),
     UsersModule,
-    CityModule
+    CityModule,
+    AuthModule
   ],
 })
 export class AppModule {}

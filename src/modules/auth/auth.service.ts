@@ -1,37 +1,53 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { LoginUserDto } from './dto/login-user.dto';
+import { UsersService } from '../users/users.service';
+import { User } from 'src/entities';
+import { JwtService } from '@nestjs/jwt';
+import { CityService } from '../city/city.service';
+import { SignUpUserDto } from './dto/signup-user.dto';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(@InjectRepository(User) private userRepository: Repository<User>,
+    private userService: UsersService,
+    private cityService: CityService,
+    private jwtService: JwtService
+    ) { }
+  
+  async login(loginUserDto: LoginUserDto) {
+    const {email, password} = loginUserDto;
+    const user = await this.userService.findOne(email);
+    if (!user){
+      throw new Error('User not found');
+    }
+    if (!user.validatePassword(password)){
+      throw new Error('Password is incorrect');
+    }
+
+    const token = this.getToken(user);
+
+    return {
+      user,
+      token
+    }
   }
 
-  findAll() {
-    return `This action returns all auth`;
+
+  getToken(user: User){
+    const payload = user.getInfotoPayload();
+    return this.jwtService.sign(payload)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
-
-  async signup(createUserDto: CreateUserDto, cityId: string) {
-    // const city = await this.cityRepository.findOne(cityId); // this.cityService.findOne(cityId);
-    // if (!city) {
-    //   throw new BadRequestException('City not found');
-    // }
-    // const user = this.userRepository.create(createUserDto); // this.userService.create(createUserDto);
-    // user.city = city;
-    // return await this.userRepository.save(user);
+  async signup(signUpUserDto: SignUpUserDto) {
+    const {cityId, ...createUserDto} = signUpUserDto;
+    const city = await this.cityService.findOne(cityId); // this.cityService.findOne(cityId);
+    if (!city) {
+      throw new BadRequestException('City not found');
+    }
+    const user = await this.userService.create(createUserDto); // this.userService.create(createUserDto);
+    user.city = city;
+    return await this.userService.save(user);
   }
 }
