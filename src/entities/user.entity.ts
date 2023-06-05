@@ -1,5 +1,5 @@
 import {Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToOne} from 'typeorm';
-import { City } from './city.entity';
+
 @Entity({
     name: 'users'
 })
@@ -16,8 +16,10 @@ export class User {
     @Column()
     password: string;
 
-    @ManyToOne(() => City)
-    city: City;
+    @Column()
+    city: string;
+
+
     
     validatePassword(password: string): boolean {
         return this.password === password;
@@ -28,7 +30,7 @@ export class User {
             id: this.id,
             name: this.name,
             email: this.email,
-            city: this.city
+            
         }
     }
 }
