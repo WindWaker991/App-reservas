@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule} from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import baseConfig from './config/base-config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSourceConfig } from './config/data.source';
 import { UsersModule } from './modules/users/users.module';
-import { CityModule } from './modules/city/city.module';
 import { AuthModule } from './modules/auth/auth.module';
-
 
 @Module({
   imports: [
@@ -16,11 +14,10 @@ import { AuthModule } from './modules/auth/auth.module';
       load: [baseConfig],
     }),
     TypeOrmModule.forRoot({
-      ...DataSourceConfig
+      ...DataSourceConfig,
     }),
     UsersModule,
-    CityModule,
-    AuthModule
+    AuthModule,
   ],
 })
 export class AppModule {}

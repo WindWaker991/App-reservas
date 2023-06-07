@@ -18,7 +18,7 @@ export class UsersService {
 
   async validate(email: string, password: string) {
     const user = await this.userRepository.findOne({ where: { email } });
-    if (user && user.password === password) {
+    if (user && user.validatePassword(password)) {
       return user;
     }
     return null;
@@ -27,12 +27,12 @@ export class UsersService {
   async update(updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.findOne({
       where: { email: updateUserDto.email },
-      relations: ['city'],
     });
     if (user) {
       user.name = updateUserDto.name;
       user.email = updateUserDto.email;
       user.password = updateUserDto.password;
+      user.city = updateUserDto.city;
       return await this.userRepository.update(user.id, user);
     }
     return null;

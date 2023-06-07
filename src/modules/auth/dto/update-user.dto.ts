@@ -1,4 +1,4 @@
-export class SignUpUserDto {
+export class updateUserDto {
   name: string;
   city: string;
   email: string;

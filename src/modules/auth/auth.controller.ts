@@ -10,6 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { SignUpUserDto } from './dto/signup-user.dto';
+import { updateUserDto } from './dto/update-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,5 +24,10 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() signUpUserDto: SignUpUserDto) {
     return await this.authService.signup(signUpUserDto);
+  }
+
+  @Patch('update')
+  async update(@Body() updateUserDto: updateUserDto) {
+    return await this.authService.update(updateUserDto);
   }
 }
