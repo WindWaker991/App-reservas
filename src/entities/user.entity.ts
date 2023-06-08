@@ -25,9 +25,6 @@ export class User {
   @Column()
   city: string;
 
-  validatePassword(password: string): boolean {
-    return this.password === password;
-  }
 
   getInfotoPayload() {
     return {

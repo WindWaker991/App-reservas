@@ -5,12 +5,14 @@ import { User } from 'src/entities';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpUserDto } from './dto/signup-user.dto';
 import { updateUserDto } from './dto/update-user.dto';
+import { BcryptService } from './bcrypt.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
+    private bcryptService: BcryptService,
   ) {}
 
   async login(loginUserDto: LoginUserDto) {
@@ -18,9 +20,6 @@ export class AuthService {
     const user = await this.userService.validate(email, password);
     if (!user) {
       throw new Error('User not found');
-    }
-    if (!user.validatePassword(password)) {
-      throw new Error('Password is incorrect');
     }
 
     const token = this.getToken(user);
