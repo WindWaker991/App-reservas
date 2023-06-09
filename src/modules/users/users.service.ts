@@ -6,7 +6,6 @@ import { User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { BcryptService } from '../auth/bcrypt.service';
 
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -22,7 +21,10 @@ export class UsersService {
 
   async validate(email: string, password: string) {
     const user = await this.userRepository.findOne({ where: { email } });
-    if (user && (await this.bcryptService.verificarContrasena(password, user.password))) {
+    if (
+      user &&
+      (await this.bcryptService.verificarContrasena(password, user.password))
+    ) {
       return user;
     }
     return null;
@@ -35,7 +37,9 @@ export class UsersService {
     if (user) {
       user.name = updateUserDto.name;
       user.email = updateUserDto.email;
-      user.password = await this.bcryptService.encriptarContrasena(updateUserDto.password);
+      user.password = await this.bcryptService.encriptarContrasena(
+        updateUserDto.password,
+      );
       user.city = updateUserDto.city;
       return await this.userRepository.update(user.id, user);
     }

@@ -12,7 +12,6 @@ export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
-    private bcryptService: BcryptService,
   ) {}
 
   async login(loginUserDto: LoginUserDto) {
