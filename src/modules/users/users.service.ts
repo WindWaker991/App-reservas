@@ -49,4 +49,16 @@ export class UsersService {
   async save(user: User) {
     return await this.userRepository.save(user);
   }
+
+  async updateUser(updateUserDto: UpdateUserDto, id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    console.log(updateUserDto)
+    if (user) {
+      user.name = updateUserDto.name;
+      user.email = updateUserDto.email;
+      user.city = updateUserDto.city;
+      return await this.userRepository.update(user.id, user);
+    }
+    return null;
+  }
 }

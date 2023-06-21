@@ -13,7 +13,7 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
     private bcryptService: BcryptService,
-  ) {}
+  ) { }
 
   async login(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
@@ -25,7 +25,6 @@ export class AuthService {
     const token = this.getToken(user);
 
     return {
-      user,
       token,
     };
   }
@@ -44,5 +43,30 @@ export class AuthService {
   async update(updateUserDto: updateUserDto) {
     const { ...updateUser } = updateUserDto;
     const user = await this.userService.update(updateUser);
+    return user;
+  }
+
+  async getProfile(email: string) {
+    try {
+      const user = await this.userService.findOne(email);
+      return user;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async validate(payload: any) {
+    const { email } = payload;
+    const user = await this.userService.findOne(email);
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+    return user;
+  }
+
+  async updateUser(updateUserDto: updateUserDto, id: string) {
+    const { ...updateUser } = updateUserDto;
+    const user = await this.userService.updateUser(updateUser, id);
+    return user;
   }
 }

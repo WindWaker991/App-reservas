@@ -9,9 +9,8 @@ import { AuthModule } from './modules/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env'],
+      envFilePath: '.env',
       isGlobal: true,
-      load: [baseConfig],
     }),
     TypeOrmModule.forRoot({
       ...DataSourceConfig,

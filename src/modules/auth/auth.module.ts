@@ -6,6 +6,7 @@ import { User } from 'src/entities';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { BcryptService } from './bcrypt.service';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { BcryptService } from './bcrypt.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, BcryptService],
+  providers: [AuthService, BcryptService, JwtStrategy],
 })
 export class AuthModule {}
