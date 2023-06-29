@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { BcryptService } from '../auth/bcrypt.service';
+import { AddBookingDto } from './dto/add-booking.dto';
 
 
 @Injectable()
@@ -12,7 +13,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private bcryptService: BcryptService,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
     const user = this.userRepository.create(createUserDto);
@@ -60,5 +61,9 @@ export class UsersService {
       return await this.userRepository.update(user.id, user);
     }
     return null;
+  }
+
+  async addBooking(addBookingDto: AddBookingDto) {
+
   }
 }

@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SignUpUserDto } from './dto/signup-user.dto';
 import { updateUserDto } from './dto/update-user.dto';
 import { BcryptService } from './bcrypt.service';
+import { LoginUserCookieDto } from './dto/login-user-cookie.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,20 @@ export class AuthService {
 
   async login(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
+    const user = await this.userService.validate(email, password);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const token = this.getToken(user);
+
+    return {
+      token,
+    };
+  }
+
+  async loginUser(loginUserCookieDto: LoginUserCookieDto) {
+    const { email, password } = loginUserCookieDto;
     const user = await this.userService.validate(email, password);
     if (!user) {
       throw new Error('User not found');
