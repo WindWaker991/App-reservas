@@ -7,6 +7,9 @@ import { SignUpUserDto } from './dto/signup-user.dto';
 import { updateUserDto } from './dto/update-user.dto';
 import { BcryptService } from './bcrypt.service';
 import { LoginUserCookieDto } from './dto/login-user-cookie.dto';
+import { AddBookingDto } from '../users/dto/add-booking.dto';
+import { HttpService } from '@nestjs/axios';
+import { catchError, firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +17,8 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
     private bcryptService: BcryptService,
-  ) { }
+    private httpService: HttpService,
+  ) {}
 
   async login(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
@@ -83,5 +87,24 @@ export class AuthService {
     const { ...updateUser } = updateUserDto;
     const user = await this.userService.updateUser(updateUser, id);
     return user;
+  }
+
+  async addBooking(addBookingDto: AddBookingDto, id: string) {
+    const { date, objectId } = addBookingDto;
+    const addBooking = {
+      create: {
+        date: date,
+        userId: id,
+      },
+      objectId: objectId,
+    };
+    // consume the endpoint from another microservice in the port 3001 with axios
+    const booking = this.httpService.axiosRef
+      .post('http://localhost:3001/booking', addBooking)
+      .then((response) => {
+        console.log(response.data);
+        return response.data;
+      });
+    return booking;
   }
 }

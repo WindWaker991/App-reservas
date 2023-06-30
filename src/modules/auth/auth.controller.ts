@@ -9,7 +9,7 @@ import {
   UseGuards,
   Req,
   Res,
-  Request
+  Request,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -18,10 +18,11 @@ import { updateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { Response } from 'express';
 import { LoginUserCookieDto } from './dto/login-user-cookie.dto';
+import { AddBookingDto } from '../users/dto/add-booking.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   // @Post('login')
   // async login(@Body() loginUserDto: LoginUserDto) {
@@ -30,14 +31,20 @@ export class AuthController {
 
   // @UseGuards(JwtAuthGuard) comentado pq esto protege las rutas
   @Post('login')
-  async loginUser(@Request() req, @Res({ passthrough: true }) res: Response, @Body() loginUserCookieDto: LoginUserCookieDto): Promise<void> {
+  async loginUser(
+    @Request() req,
+    @Res({ passthrough: true }) res: Response,
+    @Body() loginUserCookieDto: LoginUserCookieDto,
+  ): Promise<void> {
     const { token } = await this.authService.loginUser(loginUserCookieDto);
-    res.cookie('access_token', token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
-    }).send({ access_token: token });
+    res
+      .cookie('access_token', token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      })
+      .send({ access_token: token });
   }
 
   @Post('signup')
@@ -60,8 +67,15 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
+    console.log(req.user);
     const { email } = req.user;
     return await this.authService.getProfile(email);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('addBooking')
+  async addBooking(@Body() addBookingDto: AddBookingDto, @Request() req) {
+    const { id } = req.user;
+    return await this.authService.addBooking(addBookingDto, id);
+  }
 }

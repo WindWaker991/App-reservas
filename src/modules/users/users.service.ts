@@ -7,13 +7,12 @@ import { Repository } from 'typeorm';
 import { BcryptService } from '../auth/bcrypt.service';
 import { AddBookingDto } from './dto/add-booking.dto';
 
-
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private bcryptService: BcryptService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const user = this.userRepository.create(createUserDto);
@@ -23,7 +22,10 @@ export class UsersService {
 
   async validate(email: string, password: string) {
     const user = await this.userRepository.findOne({ where: { email } });
-    if (user && (await this.bcryptService.verificarContrasena(password, user.password))) {
+    if (
+      user &&
+      (await this.bcryptService.verificarContrasena(password, user.password))
+    ) {
       return user;
     }
     return null;
@@ -36,7 +38,9 @@ export class UsersService {
     if (user) {
       user.name = updateUserDto.name;
       user.email = updateUserDto.email;
-      user.password = await this.bcryptService.encriptarContrasena(updateUserDto.password);
+      user.password = await this.bcryptService.encriptarContrasena(
+        updateUserDto.password,
+      );
       user.city = updateUserDto.city;
       return await this.userRepository.update(user.id, user);
     }
@@ -53,7 +57,7 @@ export class UsersService {
 
   async updateUser(updateUserDto: UpdateUserDto, id: string) {
     const user = await this.userRepository.findOne({ where: { id } });
-    console.log(updateUserDto)
+    console.log(updateUserDto);
     if (user) {
       user.name = updateUserDto.name;
       user.email = updateUserDto.email;
@@ -61,9 +65,5 @@ export class UsersService {
       return await this.userRepository.update(user.id, user);
     }
     return null;
-  }
-
-  async addBooking(addBookingDto: AddBookingDto) {
-
   }
 }
